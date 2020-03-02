@@ -1,8 +1,18 @@
 import React from 'react';
+import './Checkout.scss';
 
-class Checkout extends React.Component {
+interface Props {
+  totalPrice: number;
+}
+
+class Checkout extends React.Component<Props, {}> {
   render() {
-    return <div>Checkout</div>;
+    return (
+      <div className="checkout">
+        <button>Checkout</button>
+        <span>{this.props.totalPrice}$</span>
+      </div>
+    );
   }
 }
 

@@ -10,7 +10,7 @@ interface Props {
 class ProductList extends React.Component<Props, {}> {
   render() {
     return (
-      <div>
+      <div className="product-list-container">
         <h2>Product List</h2>
         <div className="product-list">
           {this.props.products.map(product => (
