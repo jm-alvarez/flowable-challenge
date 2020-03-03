@@ -1,4 +1,5 @@
 import React from 'react';
+import Loader from 'react-loader-spinner';
 import Product from '../../model/Product';
 import SelectedProduct from '../../model/SelectedProduct';
 import ProductService from '../../services/ProductService';
@@ -11,6 +12,8 @@ interface State {
   selectedProducts: SelectedProduct[];
   displaying: 0 | 1;
   isMobile: boolean;
+  loadingProducts: boolean;
+  nextPage: number;
 }
 
 class App extends React.Component<{}, State> {
@@ -23,25 +26,33 @@ class App extends React.Component<{}, State> {
       products: [],
       selectedProducts: [],
       displaying: 0,
-      isMobile: window.innerWidth < this.MOBILE_BREAKPOINT
+      isMobile: window.innerWidth < this.MOBILE_BREAKPOINT,
+      loadingProducts: true,
+      nextPage: 1
     };
 
-    this.setupIsMobileDetection();
+    this.setupEventListeners();
   }
 
   async componentDidMount() {
-    const products = await ProductService.getProductList(0); // TODO: update to fetch more when user scrolls down
-
-    this.setState({
-      products
-    });
+    this.fetchProducts();
   }
 
-  setupIsMobileDetection() {
+  setupEventListeners() {
     window.addEventListener('resize', () => {
       this.setState({
         isMobile: window.innerWidth < this.MOBILE_BREAKPOINT
       });
+    });
+
+    window.addEventListener('scroll', () => {
+      if (
+        window.innerHeight + window.scrollY >= document.body.offsetHeight &&
+        this.state.displaying === 0 &&
+        !this.state.loadingProducts
+      ) {
+        this.fetchProducts();
+      }
     });
   }
 
@@ -57,15 +68,34 @@ class App extends React.Component<{}, State> {
         key="cart"
         selectedProducts={this.state.selectedProducts}
         showProductList={() => this.updateDisplayedComponent(0)}
+        increaseProductQuantity={this.addProductToCart}
+        decreaseProductQuantity={this.decreaseProductQuantity}
       />
     ];
 
     return (
-      <div className="container">
-        {this.state.isMobile ? components[this.state.displaying] : components}
+      <div>
+        <div className="container">
+          {this.state.isMobile ? components[this.state.displaying] : components}
+        </div>
+        {this.state.loadingProducts ? <Loader type="ThreeDots" /> : null}
       </div>
     );
   }
+
+  fetchProducts = async () => {
+    this.setState({
+      loadingProducts: true
+    });
+
+    const products = await ProductService.getProductList(this.state.nextPage);
+
+    this.setState({
+      products: [...this.state.products, ...products],
+      nextPage: this.state.nextPage + 1,
+      loadingProducts: false
+    });
+  };
 
   updateDisplayedComponent = (componentToDisplay: 0 | 1) => {
     this.setState({ displaying: componentToDisplay });
@@ -73,6 +103,7 @@ class App extends React.Component<{}, State> {
 
   addProductToCart = (product: Product) => {
     const { selectedProducts } = this.state;
+
     const index = selectedProducts.findIndex(
       selectedProduct => selectedProduct.product.id === product.id
     );
@@ -97,9 +128,43 @@ class App extends React.Component<{}, State> {
   removeStockUnit = (product: Product) => {
     const { products } = this.state;
     const index = products.findIndex(p => p.id === product.id);
-    
+
     if (index !== -1) {
       products[index].stock -= 1;
+      this.setState({
+        products
+      });
+    }
+  };
+
+  decreaseProductQuantity = ({ product }: SelectedProduct) => {
+    const { selectedProducts } = this.state;
+
+    const index = selectedProducts.findIndex(
+      selectedProduct => selectedProduct.product.id === product.id
+    );
+
+    if (index !== -1) {
+      selectedProducts[index].quantity -= 1;
+    }
+
+    if (selectedProducts[index].quantity === 0) {
+      selectedProducts.splice(index, 1);
+    }
+
+    this.setState({
+      selectedProducts
+    });
+
+    this.addStockUnit(product);
+  };
+
+  addStockUnit = (product: Product) => {
+    const { products } = this.state;
+    const index = products.findIndex(p => p.id === product.id);
+
+    if (index !== -1) {
+      products[index].stock += 1;
       this.setState({
         products
       });

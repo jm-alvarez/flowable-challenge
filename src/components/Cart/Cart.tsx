@@ -7,6 +7,8 @@ import './Cart.scss';
 interface Props {
   selectedProducts: SelectedProduct[];
   showProductList: () => void;
+  increaseProductQuantity: Function;
+  decreaseProductQuantity: Function;
 }
 
 interface State {
@@ -22,22 +24,11 @@ class Cart extends React.Component<Props, State> {
     };
   }
 
+  componentDidMount() {
+    this.updateTotalPrice();
+  }
   componentDidUpdate() {
-    const totalPrice =
-      this.props.selectedProducts.length > 0
-        ? this.props.selectedProducts
-            .map(
-              selectedProduct =>
-                selectedProduct.product.price * selectedProduct.quantity
-            )
-            .reduce((totalPrice, currentValue) => totalPrice + currentValue)
-        : 0;
-
-    if (this.state.totalPrice !== totalPrice) {
-      this.setState({
-        totalPrice
-      });
-    }
+    this.updateTotalPrice();
   }
 
   render() {
@@ -53,11 +44,39 @@ class Cart extends React.Component<Props, State> {
           </i>
           <h2>Cart</h2>
         </div>
-        <CartList selectedProducts={this.props.selectedProducts} />
-        <Checkout totalPrice={this.state.totalPrice} />
+        {this.props.selectedProducts.length > 0 ? (
+          <React.Fragment>
+            <CartList
+              selectedProducts={this.props.selectedProducts}
+              increaseProductQuantity={this.props.increaseProductQuantity}
+              decreaseProductQuantity={this.props.decreaseProductQuantity}
+            />
+            <Checkout totalPrice={this.state.totalPrice} />
+          </React.Fragment>
+        ) : (
+          <div className="cart-empty-message">Cart is empty</div>
+        )}
       </div>
     );
   }
+
+  updateTotalPrice = () => {
+    const totalPrice =
+      this.props.selectedProducts.length > 0
+        ? this.props.selectedProducts
+            .map(
+              selectedProduct =>
+                selectedProduct.product.price * selectedProduct.quantity
+            )
+            .reduce((totalPrice, currentValue) => totalPrice + currentValue)
+        : 0;
+
+    if (this.state.totalPrice !== totalPrice) {
+      this.setState({
+        totalPrice
+      });
+    }
+  };
 }
 
 export default Cart;

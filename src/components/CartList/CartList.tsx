@@ -5,6 +5,8 @@ import './CartList.scss';
 
 interface Props {
   selectedProducts: SelectedProduct[];
+  increaseProductQuantity: Function;
+  decreaseProductQuantity: Function;
 }
 
 class CartList extends React.Component<Props, {}> {
@@ -15,6 +17,8 @@ class CartList extends React.Component<Props, {}> {
           <CartListItem
             key={selectedProduct.product.id}
             selectedProduct={selectedProduct}
+            increaseProductQuantity={this.props.increaseProductQuantity}
+            decreaseProductQuantity={this.props.decreaseProductQuantity}
           />
         ))}
       </div>

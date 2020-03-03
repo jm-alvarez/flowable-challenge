@@ -5,6 +5,8 @@ import './CartListItem.scss';
 
 interface Props {
   selectedProduct: SelectedProduct;
+  increaseProductQuantity: Function;
+  decreaseProductQuantity: Function;
 }
 
 interface State {
@@ -23,6 +25,25 @@ class CartListItem extends React.Component<Props, State> {
 
   render() {
     const { selectedProduct } = this.props;
+    const quantityComponents = [
+      <i
+        key="remove"
+        className="material-icons"
+        onClick={() => this.props.decreaseProductQuantity(selectedProduct)}
+      >
+        remove_circle_outline
+      </i>,
+      <span key="text">{selectedProduct.quantity}</span>,
+      <i
+        key="add"
+        className="material-icons"
+        onClick={() =>
+          this.props.increaseProductQuantity(selectedProduct.product)
+        }
+      >
+        add_circle_outline
+      </i>
+    ];
 
     return (
       <div className="cart-list-item">
@@ -33,9 +54,9 @@ class CartListItem extends React.Component<Props, State> {
         <div className="content">
           <p>{selectedProduct.product.productName}</p>
           <div className="quantity">
-            <i className="material-icons">remove_circle_outline</i>
-            <span>{selectedProduct.quantity}</span>
-            <i className="material-icons">add_circle_outline</i>
+            {selectedProduct.product.stock
+              ? quantityComponents
+              : quantityComponents.slice(0, 2)}
           </div>
         </div>
         <p className="item-total-price">{this.state.totalPrice}$</p>
