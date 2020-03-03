@@ -11,7 +11,11 @@ class ProductStock extends React.Component<Props, {}> {
     return (
       <div className="product-stock">
         <p>{stock} left</p>
-        <button disabled={stock === 0}>+ add</button>
+        {stock ? (
+          <i className="material-icons" title="Add to shopping cart">
+            add_shopping_cart
+          </i>
+        ) : null}
       </div>
     );
   }

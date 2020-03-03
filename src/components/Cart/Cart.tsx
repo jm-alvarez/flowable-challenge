@@ -1,11 +1,12 @@
 import React from 'react';
-import './Cart.scss';
 import SelectedProduct from '../../model/SelectedProduct';
-import CartListItem from '../CartListItem/CartListItem';
+import CartList from '../CartList/CartList';
 import Checkout from '../Checkout/Checkout';
+import './Cart.scss';
 
 interface Props {
   selectedProducts: SelectedProduct[];
+  showProductList: () => void;
 }
 
 interface State {
@@ -21,31 +22,36 @@ class Cart extends React.Component<Props, State> {
     };
   }
 
-  componentWillReceiveProps(nextProps: Props) {
-    const totalPrice = nextProps.selectedProducts
+  componentDidUpdate() {
+    // TODO: Improve updating state only if the selected products or the quantity of one of them did change
+    const totalPrice = this.props.selectedProducts
       .map(
         selectedProduct =>
           selectedProduct.product.price * selectedProduct.quantity
       )
       .reduce((totalPrice, currentValue) => totalPrice + currentValue);
 
-    this.setState({
-      totalPrice
-    });
+    if (this.state.totalPrice !== totalPrice) {
+      this.setState({
+        totalPrice
+      });
+    }
   }
 
   render() {
     return (
       <div className="cart-container">
-        <h2>Cart</h2>
-        <div className="cart-list">
-          {this.props.selectedProducts.map(selectedProduct => (
-            <CartListItem
-              key={selectedProduct.product.id}
-              selectedProduct={selectedProduct}
-            />
-          ))}
+        <div className="title">
+          <i
+            className="material-icons"
+            title="Go to the product list"
+            onClick={this.props.showProductList}
+          >
+            arrow_back_ios
+          </i>
+          <h2>Cart</h2>
         </div>
+        <CartList selectedProducts={this.props.selectedProducts} />
         <Checkout totalPrice={this.state.totalPrice} />
       </div>
     );

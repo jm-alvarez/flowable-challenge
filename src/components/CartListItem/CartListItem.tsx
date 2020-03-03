@@ -7,7 +7,20 @@ interface Props {
   selectedProduct: SelectedProduct;
 }
 
-class CartListItem extends React.Component<Props, {}> {
+interface State {
+  totalPrice: number;
+}
+
+class CartListItem extends React.Component<Props, State> {
+  constructor(props: Props) {
+    super(props);
+
+    const { selectedProduct } = props;
+    this.state = {
+      totalPrice: selectedProduct.quantity * selectedProduct.product.price
+    };
+  }
+
   render() {
     const { selectedProduct } = this.props;
 
@@ -19,13 +32,13 @@ class CartListItem extends React.Component<Props, {}> {
         />
         <div className="content">
           <p>{selectedProduct.product.productName}</p>
-          <div>
-            <button>-</button>
-            <span className="quantity">{selectedProduct.quantity}</span>
-            <button>+</button>
+          <div className="quantity">
+            <i className="material-icons">remove_circle_outline</i>
+            <span>{selectedProduct.quantity}</span>
+            <i className="material-icons">add_circle_outline</i>
           </div>
         </div>
-        <p className="item-total-price">{selectedProduct.product.price}$</p>
+        <p className="item-total-price">{this.state.totalPrice}$</p>
       </div>
     );
   }
