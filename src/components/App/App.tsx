@@ -31,13 +31,9 @@ class App extends React.Component<{}, State> {
 
   async componentDidMount() {
     const products = await ProductService.getProductList(0); // TODO: update to fetch more when user scrolls down
-    const selectedProducts = products.map(product => {
-      return { product, quantity: 2 };
-    }); // TODO: stop mocking selected products
 
     this.setState({
-      products,
-      selectedProducts
+      products
     });
   }
 
@@ -55,6 +51,7 @@ class App extends React.Component<{}, State> {
         key="product-list"
         products={this.state.products}
         showCart={() => this.updateDisplayedComponent(1)}
+        addProductToCart={this.addProductToCart}
       />,
       <Cart
         key="cart"
@@ -72,6 +69,41 @@ class App extends React.Component<{}, State> {
 
   updateDisplayedComponent = (componentToDisplay: 0 | 1) => {
     this.setState({ displaying: componentToDisplay });
+  };
+
+  addProductToCart = (product: Product) => {
+    const { selectedProducts } = this.state;
+    const index = selectedProducts.findIndex(
+      selectedProduct => selectedProduct.product.id === product.id
+    );
+
+    if (index !== -1) {
+      selectedProducts[index].quantity += 1;
+    } else {
+      selectedProducts.push({ product, quantity: 1 });
+    }
+
+    selectedProducts.sort((a, b) =>
+      a.product.productName > b.product.productName ? 1 : -1
+    );
+
+    this.setState({
+      selectedProducts
+    });
+
+    this.removeStockUnit(product);
+  };
+
+  removeStockUnit = (product: Product) => {
+    const { products } = this.state;
+    const index = products.findIndex(p => p.id === product.id);
+    
+    if (index !== -1) {
+      products[index].stock -= 1;
+      this.setState({
+        products
+      });
+    }
   };
 }
 

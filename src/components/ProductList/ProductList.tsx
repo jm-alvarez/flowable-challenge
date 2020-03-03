@@ -6,6 +6,7 @@ import './ProductList.scss';
 interface Props {
   products: Product[];
   showCart: () => void;
+  addProductToCart: Function;
 }
 
 class ProductList extends React.Component<Props, {}> {
@@ -24,7 +25,7 @@ class ProductList extends React.Component<Props, {}> {
         </div>
         <div className="product-list">
           {this.props.products.map(product => (
-            <ProductListItem key={product.id} product={product} />
+            <ProductListItem key={product.id} product={product} addProductToCart={this.props.addProductToCart} />
           ))}
         </div>
       </div>

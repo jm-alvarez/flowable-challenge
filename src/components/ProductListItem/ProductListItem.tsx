@@ -7,6 +7,7 @@ import './ProductListItem.scss';
 
 interface Props {
   product: Product;
+  addProductToCart: Function;
 }
 
 class ProductListItem extends React.Component<Props, {}> {
@@ -27,7 +28,12 @@ class ProductListItem extends React.Component<Props, {}> {
           productDescription={productDescription}
           price={price}
         />
-        <ProductStock stock={stock} />
+        <ProductStock
+          stock={stock}
+          addProductToCart={() =>
+            this.props.addProductToCart(this.props.product)
+          }
+        />
       </div>
     );
   }

@@ -23,13 +23,15 @@ class Cart extends React.Component<Props, State> {
   }
 
   componentDidUpdate() {
-    // TODO: Improve updating state only if the selected products or the quantity of one of them did change
-    const totalPrice = this.props.selectedProducts
-      .map(
-        selectedProduct =>
-          selectedProduct.product.price * selectedProduct.quantity
-      )
-      .reduce((totalPrice, currentValue) => totalPrice + currentValue);
+    const totalPrice =
+      this.props.selectedProducts.length > 0
+        ? this.props.selectedProducts
+            .map(
+              selectedProduct =>
+                selectedProduct.product.price * selectedProduct.quantity
+            )
+            .reduce((totalPrice, currentValue) => totalPrice + currentValue)
+        : 0;
 
     if (this.state.totalPrice !== totalPrice) {
       this.setState({
