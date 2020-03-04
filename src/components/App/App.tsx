@@ -98,7 +98,7 @@ class App extends React.Component<{}, State> {
             <Loader type="Rings" color="Blue" />
           </div>
         )}
-        <ToastContainer />
+        <ToastContainer position="bottom-right" />
       </React.Fragment>
     );
   }
