@@ -9,21 +9,17 @@ interface Props {
   decreaseProductQuantity: Function;
 }
 
-class CartList extends React.Component<Props, {}> {
-  render() {
-    return (
-      <div className="cart-list">
-        {this.props.selectedProducts.map(selectedProduct => (
-          <CartListItem
-            key={selectedProduct.product.id}
-            selectedProduct={selectedProduct}
-            increaseProductQuantity={this.props.increaseProductQuantity}
-            decreaseProductQuantity={this.props.decreaseProductQuantity}
-          />
-        ))}
-      </div>
-    );
-  }
+export default function CartList(props: Props) {
+  return (
+    <div className="cart-list">
+      {props.selectedProducts.map(selectedProduct => (
+        <CartListItem
+          key={selectedProduct.product.id}
+          selectedProduct={selectedProduct}
+          increaseProductQuantity={props.increaseProductQuantity}
+          decreaseProductQuantity={props.decreaseProductQuantity}
+        />
+      ))}
+    </div>
+  );
 }
-
-export default CartList;

@@ -8,28 +8,24 @@ interface Props {
   checkingOut: boolean;
 }
 
-class Checkout extends React.Component<Props, {}> {
-  render() {
-    return (
-      <div className="checkout">
-        {this.props.checkingOut ? (
-          <Loader type="ThreeDots" color="Blue" />
-        ) : (
-          <React.Fragment>
-            <div
-              className="button"
-              title="Go to payment"
-              onClick={this.props.doCheckout}
-            >
-              <i className="material-icons">payment</i>
-              <span>Checkout</span>
-            </div>
-            <span>{this.props.totalPrice}$</span>
-          </React.Fragment>
-        )}
-      </div>
-    );
-  }
+export default function Checkout(props: Props) {
+  return (
+    <div className="checkout">
+      {props.checkingOut ? (
+        <Loader type="ThreeDots" color="Blue" />
+      ) : (
+        <React.Fragment>
+          <div
+            className="button"
+            title="Go to payment"
+            onClick={props.doCheckout}
+          >
+            <i className="material-icons">payment</i>
+            <span>Checkout</span>
+          </div>
+          <span>{props.totalPrice}$</span>
+        </React.Fragment>
+      )}
+    </div>
+  );
 }
-
-export default Checkout;

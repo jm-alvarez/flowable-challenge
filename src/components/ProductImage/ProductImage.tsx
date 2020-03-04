@@ -6,16 +6,12 @@ interface Props {
   productName: string;
 }
 
-class ProductImage extends React.Component<Props, {}> {
-  render() {
-    return (
-      <img
-        className="product-image"
-        src={this.props.imageUrl}
-        alt={this.props.productName}
-      />
-    );
-  }
+export default function ProductImage(props: Props) {
+  return (
+    <img
+      className="product-image"
+      src={props.imageUrl}
+      alt={props.productName}
+    />
+  );
 }
-
-export default ProductImage;

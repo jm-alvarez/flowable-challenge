@@ -10,33 +10,27 @@ interface Props {
   addProductToCart: Function;
 }
 
-class ProductListItem extends React.Component<Props, {}> {
-  render() {
-    const {
-      image_url,
-      productName,
-      productDescription,
-      price,
-      stock
-    } = this.props.product;
+export default function ProductListItem(props: Props) {
+  const {
+    image_url,
+    productName,
+    productDescription,
+    price,
+    stock
+  } = props.product;
 
-    return (
-      <div className="product-list-item">
-        <ProductImage imageUrl={image_url} productName={productName} />
-        <ProductDescription
-          productName={productName}
-          productDescription={productDescription}
-          price={price}
-        />
-        <ProductStock
-          stock={stock}
-          addProductToCart={() =>
-            this.props.addProductToCart(this.props.product)
-          }
-        />
-      </div>
-    );
-  }
+  return (
+    <div className="product-list-item">
+      <ProductImage imageUrl={image_url} productName={productName} />
+      <ProductDescription
+        productName={productName}
+        productDescription={productDescription}
+        price={price}
+      />
+      <ProductStock
+        stock={stock}
+        addProductToCart={() => props.addProductToCart(props.product)}
+      />
+    </div>
+  );
 }
-
-export default ProductListItem;

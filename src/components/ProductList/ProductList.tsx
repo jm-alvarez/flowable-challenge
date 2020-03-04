@@ -9,28 +9,28 @@ interface Props {
   addProductToCart: Function;
 }
 
-class ProductList extends React.Component<Props, {}> {
-  render() {
-    return (
-      <div className="product-list-container">
-        <div className="title">
-          <i
-            className="material-icons"
-            title="Go to the shopping cart"
-            onClick={this.props.showCart}
-          >
-            arrow_back_ios
-          </i>
-          <h2>Product List</h2>
-        </div>
-        <div className="product-list">
-          {this.props.products.map(product => (
-            <ProductListItem key={product.id} product={product} addProductToCart={this.props.addProductToCart} />
-          ))}
-        </div>
+export default function ProductList(props: Props) {
+  return (
+    <div className="product-list-container">
+      <div className="title">
+        <i
+          className="material-icons"
+          title="Go to the shopping cart"
+          onClick={props.showCart}
+        >
+          arrow_back_ios
+        </i>
+        <h2>Product List</h2>
       </div>
-    );
-  }
+      <div className="product-list">
+        {props.products.map(product => (
+          <ProductListItem
+            key={product.id}
+            product={product}
+            addProductToCart={props.addProductToCart}
+          />
+        ))}
+      </div>
+    </div>
+  );
 }
-
-export default ProductList;
