@@ -1,5 +1,7 @@
 import React from 'react';
 import Loader from 'react-loader-spinner';
+import { toast, ToastContainer, ToastId } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Product from '../../model/Product';
 import SelectedProduct from '../../model/SelectedProduct';
 import ProductService from '../../services/ProductService';
@@ -14,6 +16,8 @@ interface State {
   isMobile: boolean;
   loadingProducts: boolean;
   nextPage: number;
+  addedProductToast: ToastId;
+  removedProductToast: ToastId;
 }
 
 class App extends React.Component<{}, State> {
@@ -28,14 +32,19 @@ class App extends React.Component<{}, State> {
       displaying: 0,
       isMobile: window.innerWidth < this.MOBILE_BREAKPOINT,
       loadingProducts: true,
-      nextPage: 1
+      nextPage: 1,
+      addedProductToast: -1,
+      removedProductToast: -1
     };
 
     this.setupEventListeners();
   }
 
   async componentDidMount() {
-    this.fetchProducts();
+    await this.fetchProducts();
+    if (!this.state.isMobile) {
+      this.fetchProducts();
+    }
   }
 
   setupEventListeners() {
@@ -70,16 +79,18 @@ class App extends React.Component<{}, State> {
         showProductList={() => this.updateDisplayedComponent(0)}
         increaseProductQuantity={this.addProductToCart}
         decreaseProductQuantity={this.decreaseProductQuantity}
+        emptyCart={this.emptyCart}
       />
     ];
 
     return (
-      <div>
+      <React.Fragment>
         <div className="container">
           {this.state.isMobile ? components[this.state.displaying] : components}
         </div>
         {this.state.loadingProducts ? <Loader type="ThreeDots" /> : null}
-      </div>
+        <ToastContainer />
+      </React.Fragment>
     );
   }
 
@@ -118,8 +129,14 @@ class App extends React.Component<{}, State> {
       a.product.productName > b.product.productName ? 1 : -1
     );
 
+    const toastId = this.emitSuccessToast(
+      'Product added successfully.',
+      this.state.addedProductToast
+    );
+
     this.setState({
-      selectedProducts
+      selectedProducts,
+      addedProductToast: toastId
     });
 
     this.removeStockUnit(product);
@@ -152,8 +169,14 @@ class App extends React.Component<{}, State> {
       selectedProducts.splice(index, 1);
     }
 
+    const toastId = this.emitSuccessToast(
+      'Product removed successfully.',
+      this.state.removedProductToast
+    );
+
     this.setState({
-      selectedProducts
+      selectedProducts,
+      removedProductToast: toastId
     });
 
     this.addStockUnit(product);
@@ -169,6 +192,18 @@ class App extends React.Component<{}, State> {
         products
       });
     }
+  };
+
+  emptyCart = () => {
+    this.setState({
+      selectedProducts: []
+    });
+  };
+
+  emitSuccessToast = (message: string, previousToast: ToastId) => {
+    return !toast.isActive(previousToast)
+      ? toast.success(message)
+      : previousToast;
   };
 }
 

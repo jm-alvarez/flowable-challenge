@@ -1,18 +1,22 @@
 import React from 'react';
+import { toast } from 'react-toastify';
 import SelectedProduct from '../../model/SelectedProduct';
 import CartList from '../CartList/CartList';
 import Checkout from '../Checkout/Checkout';
 import './Cart.scss';
+import ProductService from '../../services/ProductService';
 
 interface Props {
   selectedProducts: SelectedProduct[];
   showProductList: () => void;
   increaseProductQuantity: Function;
   decreaseProductQuantity: Function;
+  emptyCart: Function;
 }
 
 interface State {
   totalPrice: number;
+  checkingOut: boolean;
 }
 
 class Cart extends React.Component<Props, State> {
@@ -20,7 +24,8 @@ class Cart extends React.Component<Props, State> {
     super(props);
 
     this.state = {
-      totalPrice: 0
+      totalPrice: 0,
+      checkingOut: false
     };
   }
 
@@ -51,7 +56,11 @@ class Cart extends React.Component<Props, State> {
               increaseProductQuantity={this.props.increaseProductQuantity}
               decreaseProductQuantity={this.props.decreaseProductQuantity}
             />
-            <Checkout totalPrice={this.state.totalPrice} />
+            <Checkout
+              totalPrice={this.state.totalPrice}
+              doCheckout={this.doCheckout}
+              checkingOut={this.state.checkingOut}
+            />
           </React.Fragment>
         ) : (
           <div className="cart-empty-message">Cart is empty</div>
@@ -76,6 +85,28 @@ class Cart extends React.Component<Props, State> {
         totalPrice
       });
     }
+  };
+
+  doCheckout = () => {
+    this.setState({
+      checkingOut: true
+    });
+
+    this.props.selectedProducts.forEach(selectedProduct => {
+      ProductService.updateProductStock(
+        selectedProduct.product.id,
+        selectedProduct.product.stock
+      );
+    });
+
+    setTimeout(() => {
+      toast.success('Checkout was successfully completed!');
+      this.props.emptyCart();
+      this.setState({
+        checkingOut: false
+      });
+      this.props.showProductList();
+    }, 1000);
   };
 }
 
