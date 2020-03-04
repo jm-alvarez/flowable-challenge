@@ -13,7 +13,7 @@ class Checkout extends React.Component<Props, {}> {
     return (
       <div className="checkout">
         {this.props.checkingOut ? (
-          <Loader type="ThreeDots" />
+          <Loader type="ThreeDots" color="Blue" />
         ) : (
           <React.Fragment>
             <div

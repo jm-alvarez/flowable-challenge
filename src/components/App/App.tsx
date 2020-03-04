@@ -10,6 +10,7 @@ import ProductList from '../ProductList/ProductList';
 import './App.scss';
 
 interface State {
+  initCompleted: boolean;
   products: Product[];
   selectedProducts: SelectedProduct[];
   displaying: 0 | 1;
@@ -27,11 +28,12 @@ class App extends React.Component<{}, State> {
     super(props);
 
     this.state = {
+      initCompleted: false,
       products: [],
       selectedProducts: [],
       displaying: 0,
       isMobile: window.innerWidth < this.MOBILE_BREAKPOINT,
-      loadingProducts: true,
+      loadingProducts: false,
       nextPage: 1,
       addedProductToast: -1,
       removedProductToast: -1
@@ -85,27 +87,43 @@ class App extends React.Component<{}, State> {
 
     return (
       <React.Fragment>
-        <div className="container">
-          {this.state.isMobile ? components[this.state.displaying] : components}
-        </div>
-        {this.state.loadingProducts ? <Loader type="ThreeDots" /> : null}
+        {this.state.initCompleted ? (
+          <div className="container">
+            {this.state.isMobile
+              ? components[this.state.displaying]
+              : components}
+          </div>
+        ) : (
+          <div className="loader">
+            <Loader type="Rings" color="Blue" />
+          </div>
+        )}
         <ToastContainer />
       </React.Fragment>
     );
   }
 
   fetchProducts = async () => {
-    this.setState({
-      loadingProducts: true
-    });
+    if (this.state.loadingProducts) {
+      setTimeout(this.fetchProducts, 1000);
+    } else {
+      this.setState({
+        loadingProducts: true
+      });
 
-    const products = await ProductService.getProductList(this.state.nextPage);
+      const products = await ProductService.getProductList(this.state.nextPage);
 
-    this.setState({
-      products: [...this.state.products, ...products],
-      nextPage: this.state.nextPage + 1,
-      loadingProducts: false
-    });
+      setTimeout(
+        () =>
+          this.setState({
+            products: [...this.state.products, ...products],
+            nextPage: this.state.nextPage + 1,
+            loadingProducts: false,
+            initCompleted: true
+          }),
+        this.state.initCompleted ? 0 : 2000
+      );
+    }
   };
 
   updateDisplayedComponent = (componentToDisplay: 0 | 1) => {
