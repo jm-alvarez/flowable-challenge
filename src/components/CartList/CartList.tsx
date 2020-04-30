@@ -1,25 +1,29 @@
 import React from 'react';
+import Product from '../../model/Product';
 import SelectedProduct from '../../model/SelectedProduct';
 import CartListItem from '../CartListItem/CartListItem';
 import './CartList.scss';
 
-interface Props {
+interface IProps {
   selectedProducts: SelectedProduct[];
-  increaseProductQuantity: Function;
-  decreaseProductQuantity: Function;
+  increaseProductQuantity: (product: Product) => void;
+  decreaseProductQuantity: (product: SelectedProduct) => void;
 }
 
-export default function CartList(props: Props) {
+const CartList = (props: IProps) => {
   return (
     <div className="cart-list">
-      {props.selectedProducts.map(selectedProduct => (
+      {props.selectedProducts.map((selectedProduct) => (
         <CartListItem
           key={selectedProduct.product.id}
           selectedProduct={selectedProduct}
+          quantity={selectedProduct.quantity}
           increaseProductQuantity={props.increaseProductQuantity}
           decreaseProductQuantity={props.decreaseProductQuantity}
         />
       ))}
     </div>
   );
-}
+};
+
+export default CartList;

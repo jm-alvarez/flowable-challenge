@@ -1,15 +1,17 @@
 import React from 'react';
+import Product from '../../model/Product';
 import SelectedProduct from '../../model/SelectedProduct';
 import ProductImage from '../ProductImage/ProductImage';
 import './CartListItem.scss';
 
-interface Props {
+interface IProps {
   selectedProduct: SelectedProduct;
-  increaseProductQuantity: Function;
-  decreaseProductQuantity: Function;
+  quantity: number;
+  increaseProductQuantity: (product: Product) => void;
+  decreaseProductQuantity: (product: SelectedProduct) => void;
 }
 
-export default function CartListItem(props: Props) {
+const CartListItem = (props: IProps) => {
   const { selectedProduct } = props;
   const quantityComponents = [
     <i
@@ -19,14 +21,14 @@ export default function CartListItem(props: Props) {
     >
       remove_circle_outline
     </i>,
-    <span key="text">{selectedProduct.quantity}</span>,
+    <span key="text">{props.quantity}</span>,
     <i
       key="add"
       className="material-icons"
       onClick={() => props.increaseProductQuantity(selectedProduct.product)}
     >
       add_circle_outline
-    </i>
+    </i>,
   ];
 
   const totalPrice = selectedProduct.quantity * selectedProduct.product.price;
@@ -40,12 +42,12 @@ export default function CartListItem(props: Props) {
       <div className="content">
         <p>{selectedProduct.product.productName}</p>
         <div className="quantity">
-          {selectedProduct.product.stock
-            ? quantityComponents
-            : quantityComponents.slice(0, 2)}
+          {selectedProduct.product.stock ? quantityComponents : quantityComponents.slice(0, 2)}
         </div>
       </div>
       <p className="item-total-price">{totalPrice}$</p>
     </div>
   );
-}
+};
+
+export default React.memo(CartListItem);

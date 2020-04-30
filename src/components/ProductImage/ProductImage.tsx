@@ -1,17 +1,13 @@
 import React from 'react';
 import './ProductImage.scss';
 
-interface Props {
+interface IProps {
   imageUrl: string;
   productName: string;
 }
 
-export default function ProductImage(props: Props) {
-  return (
-    <img
-      className="product-image"
-      src={props.imageUrl}
-      alt={props.productName}
-    />
-  );
-}
+const ProductImage = (props: IProps) => {
+  return <img className="product-image" src={props.imageUrl} alt={props.productName} />;
+};
+
+export default React.memo(ProductImage);

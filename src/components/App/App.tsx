@@ -9,7 +9,7 @@ import Cart from '../Cart/Cart';
 import ProductList from '../ProductList/ProductList';
 import './App.scss';
 
-interface State {
+interface IState {
   initCompleted: boolean;
   products: Product[];
   selectedProducts: SelectedProduct[];
@@ -21,7 +21,7 @@ interface State {
   removedProductToast: ToastId;
 }
 
-class App extends React.Component<{}, State> {
+class App extends React.Component<{}, IState> {
   private readonly MOBILE_BREAKPOINT = 768;
 
   constructor(props: any) {
@@ -36,7 +36,7 @@ class App extends React.Component<{}, State> {
       loadingProducts: false,
       nextPage: 1,
       addedProductToast: -1,
-      removedProductToast: -1
+      removedProductToast: -1,
     };
 
     this.setupEventListeners();
@@ -52,7 +52,7 @@ class App extends React.Component<{}, State> {
   setupEventListeners() {
     window.addEventListener('resize', () => {
       this.setState({
-        isMobile: window.innerWidth < this.MOBILE_BREAKPOINT
+        isMobile: window.innerWidth < this.MOBILE_BREAKPOINT,
       });
     });
 
@@ -82,16 +82,14 @@ class App extends React.Component<{}, State> {
         increaseProductQuantity={this.addProductToCart}
         decreaseProductQuantity={this.decreaseProductQuantity}
         emptyCart={this.emptyCart}
-      />
+      />,
     ];
 
     return (
       <React.Fragment>
         {this.state.initCompleted ? (
           <div className="container">
-            {this.state.isMobile
-              ? components[this.state.displaying]
-              : components}
+            {this.state.isMobile ? components[this.state.displaying] : components}
           </div>
         ) : (
           <div className="loader">
@@ -108,7 +106,7 @@ class App extends React.Component<{}, State> {
       setTimeout(this.fetchProducts, 1000);
     } else {
       this.setState({
-        loadingProducts: true
+        loadingProducts: true,
       });
 
       const products = await ProductService.getProductList(this.state.nextPage);
@@ -119,7 +117,7 @@ class App extends React.Component<{}, State> {
             products: [...this.state.products, ...products],
             nextPage: this.state.nextPage + 1,
             loadingProducts: false,
-            initCompleted: true
+            initCompleted: true,
           }),
         this.state.initCompleted ? 0 : 2000
       );
@@ -134,7 +132,7 @@ class App extends React.Component<{}, State> {
     const { selectedProducts } = this.state;
 
     const index = selectedProducts.findIndex(
-      selectedProduct => selectedProduct.product.id === product.id
+      (selectedProduct) => selectedProduct.product.id === product.id
     );
 
     if (index !== -1) {
@@ -143,9 +141,7 @@ class App extends React.Component<{}, State> {
       selectedProducts.push({ product, quantity: 1 });
     }
 
-    selectedProducts.sort((a, b) =>
-      a.product.productName > b.product.productName ? 1 : -1
-    );
+    selectedProducts.sort((a, b) => (a.product.productName > b.product.productName ? 1 : -1));
 
     const toastId = this.emitSuccessToast(
       'Product added successfully.',
@@ -154,7 +150,7 @@ class App extends React.Component<{}, State> {
 
     this.setState({
       selectedProducts,
-      addedProductToast: toastId
+      addedProductToast: toastId,
     });
 
     this.removeStockUnit(product);
@@ -162,12 +158,12 @@ class App extends React.Component<{}, State> {
 
   removeStockUnit = (product: Product) => {
     const { products } = this.state;
-    const index = products.findIndex(p => p.id === product.id);
+    const index = products.findIndex((p) => p.id === product.id);
 
     if (index !== -1) {
       products[index].stock -= 1;
       this.setState({
-        products
+        products,
       });
     }
   };
@@ -176,7 +172,7 @@ class App extends React.Component<{}, State> {
     const { selectedProducts } = this.state;
 
     const index = selectedProducts.findIndex(
-      selectedProduct => selectedProduct.product.id === product.id
+      (selectedProduct) => selectedProduct.product.id === product.id
     );
 
     if (index !== -1) {
@@ -194,7 +190,7 @@ class App extends React.Component<{}, State> {
 
     this.setState({
       selectedProducts,
-      removedProductToast: toastId
+      removedProductToast: toastId,
     });
 
     this.addStockUnit(product);
@@ -202,26 +198,24 @@ class App extends React.Component<{}, State> {
 
   addStockUnit = (product: Product) => {
     const { products } = this.state;
-    const index = products.findIndex(p => p.id === product.id);
+    const index = products.findIndex((p) => p.id === product.id);
 
     if (index !== -1) {
       products[index].stock += 1;
       this.setState({
-        products
+        products,
       });
     }
   };
 
   emptyCart = () => {
     this.setState({
-      selectedProducts: []
+      selectedProducts: [],
     });
   };
 
   emitSuccessToast = (message: string, previousToast: ToastId) => {
-    return !toast.isActive(previousToast)
-      ? toast.success(message)
-      : previousToast;
+    return !toast.isActive(previousToast) ? toast.success(message) : previousToast;
   };
 }
 

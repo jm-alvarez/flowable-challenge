@@ -1,31 +1,32 @@
 import React from 'react';
 import { toast } from 'react-toastify';
+import Product from '../../model/Product';
 import SelectedProduct from '../../model/SelectedProduct';
+import ProductService from '../../services/ProductService';
 import CartList from '../CartList/CartList';
 import Checkout from '../Checkout/Checkout';
 import './Cart.scss';
-import ProductService from '../../services/ProductService';
 
-interface Props {
+interface IProps {
   selectedProducts: SelectedProduct[];
   showProductList: () => void;
-  increaseProductQuantity: Function;
-  decreaseProductQuantity: Function;
-  emptyCart: Function;
+  increaseProductQuantity: (product: Product) => void;
+  decreaseProductQuantity: (product: SelectedProduct) => void;
+  emptyCart: () => void;
 }
 
-interface State {
+interface IState {
   totalPrice: number;
   checkingOut: boolean;
 }
 
-class Cart extends React.Component<Props, State> {
-  constructor(props: Props) {
+class Cart extends React.PureComponent<IProps, IState> {
+  constructor(props: IProps) {
     super(props);
 
     this.state = {
       totalPrice: 0,
-      checkingOut: false
+      checkingOut: false,
     };
   }
 
@@ -73,37 +74,31 @@ class Cart extends React.Component<Props, State> {
     const totalPrice =
       this.props.selectedProducts.length > 0
         ? this.props.selectedProducts
-            .map(
-              selectedProduct =>
-                selectedProduct.product.price * selectedProduct.quantity
-            )
+            .map((selectedProduct) => selectedProduct.product.price * selectedProduct.quantity)
             .reduce((totalPrice, currentValue) => totalPrice + currentValue)
         : 0;
 
     if (this.state.totalPrice !== totalPrice) {
       this.setState({
-        totalPrice
+        totalPrice,
       });
     }
   };
 
   doCheckout = () => {
     this.setState({
-      checkingOut: true
+      checkingOut: true,
     });
 
-    this.props.selectedProducts.forEach(selectedProduct => {
-      ProductService.updateProductStock(
-        selectedProduct.product.id,
-        selectedProduct.product.stock
-      );
+    this.props.selectedProducts.forEach((selectedProduct) => {
+      ProductService.updateProductStock(selectedProduct.product.id, selectedProduct.product.stock);
     });
 
     setTimeout(() => {
       toast.success('Checkout was successfully completed!');
       this.props.emptyCart();
       this.setState({
-        checkingOut: false
+        checkingOut: false,
       });
       this.props.showProductList();
     }, 1000);

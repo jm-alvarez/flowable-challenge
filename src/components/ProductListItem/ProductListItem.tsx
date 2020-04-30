@@ -5,19 +5,13 @@ import ProductImage from '../ProductImage/ProductImage';
 import ProductStock from '../ProductStock/ProductStock';
 import './ProductListItem.scss';
 
-interface Props {
+interface IProps {
   product: Product;
-  addProductToCart: Function;
+  addProductToCart: (product: Product) => void;
 }
 
-export default function ProductListItem(props: Props) {
-  const {
-    image_url,
-    productName,
-    productDescription,
-    price,
-    stock
-  } = props.product;
+const ProductListItem = (props: IProps) => {
+  const { image_url, productName, productDescription, price, stock } = props.product;
 
   return (
     <div className="product-list-item">
@@ -27,10 +21,9 @@ export default function ProductListItem(props: Props) {
         productDescription={productDescription}
         price={price}
       />
-      <ProductStock
-        stock={stock}
-        addProductToCart={() => props.addProductToCart(props.product)}
-      />
+      <ProductStock stock={stock} addProductToCart={() => props.addProductToCart(props.product)} />
     </div>
   );
-}
+};
+
+export default ProductListItem;

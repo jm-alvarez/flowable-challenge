@@ -3,27 +3,23 @@ import Product from '../../model/Product';
 import ProductListItem from '../ProductListItem/ProductListItem';
 import './ProductList.scss';
 
-interface Props {
+interface IProps {
   products: Product[];
   showCart: () => void;
-  addProductToCart: Function;
+  addProductToCart: (product: Product) => void;
 }
 
-export default function ProductList(props: Props) {
+const ProductList = (props: IProps) => {
   return (
     <div className="product-list-container">
       <div className="title">
-        <i
-          className="material-icons"
-          title="Go to the shopping cart"
-          onClick={props.showCart}
-        >
+        <i className="material-icons" title="Go to the shopping cart" onClick={props.showCart}>
           arrow_back_ios
         </i>
         <h2>Product List</h2>
       </div>
       <div className="product-list">
-        {props.products.map(product => (
+        {props.products.map((product) => (
           <ProductListItem
             key={product.id}
             product={product}
@@ -33,4 +29,6 @@ export default function ProductList(props: Props) {
       </div>
     </div>
   );
-}
+};
+
+export default React.memo(ProductList);

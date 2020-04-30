@@ -1,13 +1,13 @@
 import React from 'react';
 import './ProductDescription.scss';
 
-interface Props {
+interface IProps {
   productName: string;
   productDescription: string;
   price: number;
 }
 
-export default function ProductDescription(props: Props) {
+const ProductDescription = (props: IProps) => {
   const { productDescription, productName, price } = props;
 
   const descriptionElement =
@@ -29,4 +29,6 @@ export default function ProductDescription(props: Props) {
       <p>{price}$</p>
     </div>
   );
-}
+};
+
+export default React.memo(ProductDescription);
