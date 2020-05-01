@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import Loader from 'react-loader-spinner';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Product from '../../model/Product';
 import { getProductList } from '../../services/ProductService';
 import { loadProducts } from '../../state/actions';
 import { GlobalState } from '../../state/reducers';
@@ -11,128 +11,55 @@ import Cart from '../Cart/Cart';
 import ProductList from '../ProductList/ProductList';
 import './App.scss';
 
-interface IState {
-  initCompleted: boolean;
-  products: Product[];
-  displaying: 0 | 1;
-  isMobile: boolean;
-  loadingProducts: boolean;
-  nextPage: number;
-}
+const App = () => {
+  const MOBILE_BREAKPOINT = 768;
+  const [displaying, setDisplaying] = useState(0);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < MOBILE_BREAKPOINT);
+  const [nextPage, setNextPage] = useState(1);
 
-interface IProps {
-  products: Product[];
-  onLoadProducts: (products: Product[]) => void;
-}
+  const dispatch = useDispatch();
+  const products = useSelector((state: GlobalState) => state.products);
 
-class App extends React.Component<IProps, IState> {
-  private readonly MOBILE_BREAKPOINT = 768;
-
-  constructor(props: any) {
-    super(props);
-
-    this.state = {
-      initCompleted: false,
-      products: [],
-      displaying: 0,
-      isMobile: window.innerWidth < this.MOBILE_BREAKPOINT,
-      loadingProducts: false,
-      nextPage: 1,
-    };
-
-    this.setupEventListeners();
-  }
-
-  async componentDidMount() {
-    await this.fetchProducts();
-    if (!this.state.isMobile) {
-      this.fetchProducts();
-    }
-  }
-
-  setupEventListeners() {
-    window.addEventListener('resize', () => {
-      this.setState({
-        isMobile: window.innerWidth < this.MOBILE_BREAKPOINT,
-      });
+  const fetchProducts = () => {
+    getProductList(nextPage).then((products) => {
+      setTimeout(() => {
+        dispatch(loadProducts(products));
+        setNextPage(nextPage + 1);
+      }, 1000);
     });
-
-    window.addEventListener('scroll', () => {
-      if (
-        window.innerHeight + window.scrollY >= document.body.offsetHeight &&
-        this.state.displaying === 0 &&
-        !this.state.loadingProducts
-      ) {
-        this.fetchProducts();
-      }
-    });
-  }
-
-  render() {
-    const components = [
-      <ProductList key="product-list" showCart={() => this.updateDisplayedComponent(1)} />,
-      <Cart key="cart" showProductList={() => this.updateDisplayedComponent(0)} />,
-    ];
-
-    return (
-      <React.Fragment>
-        {this.state.initCompleted ? (
-          <div className="container">
-            {this.state.isMobile ? components[this.state.displaying] : components}
-          </div>
-        ) : (
-          <div className="loader">
-            <Loader type="Rings" color="Blue" />
-          </div>
-        )}
-        <ToastContainer position="bottom-right" />
-      </React.Fragment>
-    );
-  }
-
-  fetchProducts = async () => {
-    if (this.state.loadingProducts) {
-      setTimeout(this.fetchProducts, 1000);
-    } else {
-      this.setState({
-        loadingProducts: true,
-      });
-
-      const products = await getProductList(this.state.nextPage);
-
-      setTimeout(
-        () => {
-          this.props.onLoadProducts(products);
-
-          this.setState({
-            products: [...this.state.products, ...products],
-            nextPage: this.state.nextPage + 1,
-            loadingProducts: false,
-            initCompleted: true,
-          });
-        },
-        this.state.initCompleted ? 0 : 2000
-      );
-    }
   };
 
-  updateDisplayedComponent = (componentToDisplay: 0 | 1) => {
-    this.setState({ displaying: componentToDisplay });
-  };
-}
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
-const mapStateToProps = (state: GlobalState) => {
-  return {
-    products: state.products,
-  };
+  window.addEventListener('resize', () => {
+    setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
+  });
+
+  const components = [
+    <ProductList key="product-list" showCart={() => setDisplaying(1)} />,
+    <Cart key="cart" showProductList={() => setDisplaying(0)} />,
+  ];
+
+  return (
+    <InfiniteScroll
+      dataLength={products.length}
+      next={fetchProducts}
+      hasMore={nextPage < 100}
+      loader={<React.Fragment></React.Fragment>}
+      endMessage={<p>No more products found.</p>}
+    >
+      {products.length > 0 ? (
+        <div className="container">{isMobile ? components[displaying] : components}</div>
+      ) : (
+        <div className="loader">
+          <Loader type="Rings" color="Blue" />
+        </div>
+      )}
+      <ToastContainer position="bottom-right" />
+    </InfiniteScroll>
+  );
 };
 
-const mapDispatchToProps = (dispatch: any) => {
-  return {
-    onLoadProducts: (products: Product[]) => {
-      dispatch(loadProducts(products));
-    },
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default App;
