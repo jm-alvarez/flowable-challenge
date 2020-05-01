@@ -15,10 +15,20 @@ const App = () => {
   const MOBILE_BREAKPOINT = 768;
   const [displaying, setDisplaying] = useState(0);
   const [isMobile, setIsMobile] = useState(window.innerWidth < MOBILE_BREAKPOINT);
-  const [nextPage, setNextPage] = useState(1);
+  const [nextPage, setNextPage] = useState(2);
 
   const dispatch = useDispatch();
   const products = useSelector((state: GlobalState) => state.products);
+
+  useEffect(() => {
+    getProductList(1).then((products) => {
+      dispatch(loadProducts(products));
+    });
+  }, [dispatch]);
+
+  window.addEventListener('resize', () => {
+    setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
+  });
 
   const fetchProducts = () => {
     getProductList(nextPage).then((products) => {
@@ -28,14 +38,6 @@ const App = () => {
       }, 1000);
     });
   };
-
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  window.addEventListener('resize', () => {
-    setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
-  });
 
   const components = [
     <ProductList key="product-list" showCart={() => setDisplaying(1)} />,
