@@ -1,5 +1,5 @@
 import Product from '../model/Product';
-import { LOAD_PRODUCTS, ADD_PRODUCT_TO_CART, REMOVE_PRODUCT_FROM_CART } from './actions';
+import { ADD_PRODUCT_TO_CART, LOAD_PRODUCTS, REMOVE_PRODUCT_FROM_CART } from './actions';
 import { IAction } from './reducers';
 
 const products = (state: Product[] = [], action: IAction) => {

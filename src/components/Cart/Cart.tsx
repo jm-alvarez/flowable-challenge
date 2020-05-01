@@ -1,13 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { toast } from 'react-toastify';
 import CartProducts from '../../model/Cart';
 import Product from '../../model/Product';
+import { updateProductStock } from '../../services/ProductService';
+import { emptyCart } from '../../state/actions';
 import { GlobalState } from '../../state/reducers';
+import { emitCheckoutCompletedToast } from '../../utils/toasts';
 import CartList from '../CartList/CartList';
 import Checkout from '../Checkout/Checkout';
 import './Cart.scss';
-import { emptyCart } from '../../state/actions';
 
 interface IProps {
   cart: CartProducts;
@@ -17,7 +18,6 @@ interface IProps {
 }
 
 interface IState {
-  totalPrice: number;
   checkingOut: boolean;
 }
 
@@ -26,16 +26,8 @@ class Cart extends React.Component<IProps, IState> {
     super(props);
 
     this.state = {
-      totalPrice: 0,
       checkingOut: false,
     };
-  }
-
-  componentDidMount() {
-    this.updateTotalPrice();
-  }
-  componentDidUpdate() {
-    this.updateTotalPrice();
   }
 
   render() {
@@ -54,11 +46,7 @@ class Cart extends React.Component<IProps, IState> {
         {Object.keys(this.props.cart).length > 0 ? (
           <React.Fragment>
             <CartList />
-            <Checkout
-              totalPrice={this.state.totalPrice}
-              doCheckout={this.doCheckout}
-              checkingOut={this.state.checkingOut}
-            />
+            <Checkout doCheckout={this.doCheckout} checkingOut={this.state.checkingOut} />
           </React.Fragment>
         ) : (
           <div className="cart-empty-message">Cart is empty</div>
@@ -67,23 +55,6 @@ class Cart extends React.Component<IProps, IState> {
     );
   }
 
-  updateTotalPrice = () => {
-    const products = Object.entries(this.props.cart);
-
-    const totalPrice =
-      products.length > 0
-        ? products
-            .map(([id, quantity]) => this.getProduct(id).price * quantity)
-            .reduce((totalPrice, currentValue) => totalPrice + currentValue)
-        : 0;
-
-    if (this.state.totalPrice !== totalPrice) {
-      this.setState({
-        totalPrice,
-      });
-    }
-  };
-
   getProduct = (id: string) => this.props.products.filter((product) => product.id === id)[0];
 
   doCheckout = () => {
@@ -91,12 +62,14 @@ class Cart extends React.Component<IProps, IState> {
       checkingOut: true,
     });
 
-    // this.props.cart.forEach((selectedProduct) => {
-    //   ProductService.updateProductStock(selectedProduct.product.id, selectedProduct.product.stock);
-    // });
+    this.props.products.forEach((product) => {
+      if (this.props.cart[product.id]) {
+        updateProductStock(product.id, product.stock);
+      }
+    });
 
     setTimeout(() => {
-      toast.success('Checkout was successfully completed!');
+      emitCheckoutCompletedToast();
       this.props.onEmptyCart();
       this.setState({
         checkingOut: false,

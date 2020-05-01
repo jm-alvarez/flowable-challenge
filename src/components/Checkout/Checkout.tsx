@@ -1,14 +1,17 @@
 import React from 'react';
 import Loader from 'react-loader-spinner';
 import './Checkout.scss';
+import { useSelector } from 'react-redux';
+import { GlobalState } from '../../state/reducers';
 
 interface IProps {
-  totalPrice: number;
   doCheckout: () => void;
   checkingOut: boolean;
 }
 
 const Checkout = (props: IProps) => {
+  const totalPrice = useSelector((state: GlobalState) => state.totalPrice);
+
   return (
     <div className="checkout">
       {props.checkingOut ? (
@@ -19,7 +22,7 @@ const Checkout = (props: IProps) => {
             <i className="material-icons">payment</i>
             <span>Checkout</span>
           </div>
-          <span>{props.totalPrice}$</span>
+          <span>{totalPrice}$</span>
         </React.Fragment>
       )}
     </div>

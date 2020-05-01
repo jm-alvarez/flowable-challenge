@@ -1,10 +1,10 @@
 import React from 'react';
 import Loader from 'react-loader-spinner';
 import { connect } from 'react-redux';
-import { toast, ToastContainer, ToastId } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Product from '../../model/Product';
-import ProductService from '../../services/ProductService';
+import { getProductList } from '../../services/ProductService';
 import { loadProducts } from '../../state/actions';
 import { GlobalState } from '../../state/reducers';
 import Cart from '../Cart/Cart';
@@ -18,8 +18,6 @@ interface IState {
   isMobile: boolean;
   loadingProducts: boolean;
   nextPage: number;
-  addedProductToast: ToastId;
-  removedProductToast: ToastId;
 }
 
 interface IProps {
@@ -40,8 +38,6 @@ class App extends React.Component<IProps, IState> {
       isMobile: window.innerWidth < this.MOBILE_BREAKPOINT,
       loadingProducts: false,
       nextPage: 1,
-      addedProductToast: -1,
-      removedProductToast: -1,
     };
 
     this.setupEventListeners();
@@ -102,7 +98,7 @@ class App extends React.Component<IProps, IState> {
         loadingProducts: true,
       });
 
-      const products = await ProductService.getProductList(this.state.nextPage);
+      const products = await getProductList(this.state.nextPage);
 
       setTimeout(
         () => {
@@ -122,34 +118,6 @@ class App extends React.Component<IProps, IState> {
 
   updateDisplayedComponent = (componentToDisplay: 0 | 1) => {
     this.setState({ displaying: componentToDisplay });
-  };
-
-  // TODO: Not being called
-  // addProductToCart = () => {
-  //   const toastId = this.emitSuccessToast(
-  //     'Product added successfully.',
-  //     this.state.addedProductToast
-  //   );
-
-  //   this.setState({
-  //     addedProductToast: toastId,
-  //   });
-  // };
-
-  // TODO: Not being called
-  // decreaseProductQuantity = () => {
-  //   const toastId = this.emitSuccessToast(
-  //     'Product removed successfully.',
-  //     this.state.removedProductToast
-  //   );
-
-  //   this.setState({
-  //     removedProductToast: toastId,
-  //   });
-  // };
-
-  emitSuccessToast = (message: string, previousToast: ToastId) => {
-    return !toast.isActive(previousToast) ? toast.success(message) : previousToast;
   };
 }
 

@@ -10,9 +10,11 @@ const CartList = () => {
 
   return (
     <div className="cart-list">
-      {Object.entries(cart).map(([id, quantity]) => (
-        <CartListItem key={id} product={getProduct(id)} quantity={quantity} />
-      ))}
+      {Object.entries(cart)
+        .sort()
+        .map(([id, quantity]) => (
+          <CartListItem key={id} product={getProduct(id)} quantity={quantity} />
+        ))}
     </div>
   );
 };
