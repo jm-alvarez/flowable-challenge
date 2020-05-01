@@ -4,14 +4,21 @@ import ProductDescription from '../ProductDescription/ProductDescription';
 import ProductImage from '../ProductImage/ProductImage';
 import ProductStock from '../ProductStock/ProductStock';
 import './ProductListItem.scss';
+import { GlobalState } from '../../state/reducers';
+import { useSelector, useDispatch } from 'react-redux';
+import { addProductToCart } from '../../state/actions';
+import CartProducts from '../../model/Cart';
 
 interface IProps {
   product: Product;
-  addProductToCart: (product: Product) => void;
 }
 
 const ProductListItem = (props: IProps) => {
   const { image_url, productName, productDescription, price, stock } = props.product;
+
+  const cart: CartProducts = useSelector((state: GlobalState) => state.cart);
+  const quantity: number = cart[props.product.id];
+  const dispatch = useDispatch();
 
   return (
     <div className="product-list-item">
@@ -21,7 +28,10 @@ const ProductListItem = (props: IProps) => {
         productDescription={productDescription}
         price={price}
       />
-      <ProductStock stock={stock} addProductToCart={() => props.addProductToCart(props.product)} />
+      <ProductStock
+        stock={stock}
+        addProductToCart={() => dispatch(addProductToCart(props.product, quantity))}
+      />
     </div>
   );
 };

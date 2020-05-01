@@ -20,8 +20,4 @@ const ProductStock = (props: IProps) => {
   );
 };
 
-const areEqual = (prevProps: IProps, nextProps: IProps) => {
-  return prevProps.stock === nextProps.stock;
-};
-
-export default React.memo(ProductStock, areEqual);
+export default ProductStock;

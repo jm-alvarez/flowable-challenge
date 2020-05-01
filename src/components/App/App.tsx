@@ -1,10 +1,12 @@
 import React from 'react';
 import Loader from 'react-loader-spinner';
+import { connect } from 'react-redux';
 import { toast, ToastContainer, ToastId } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Product from '../../model/Product';
-import SelectedProduct from '../../model/SelectedProduct';
 import ProductService from '../../services/ProductService';
+import { loadProducts } from '../../state/actions';
+import { GlobalState } from '../../state/reducers';
 import Cart from '../Cart/Cart';
 import ProductList from '../ProductList/ProductList';
 import './App.scss';
@@ -12,7 +14,6 @@ import './App.scss';
 interface IState {
   initCompleted: boolean;
   products: Product[];
-  selectedProducts: SelectedProduct[];
   displaying: 0 | 1;
   isMobile: boolean;
   loadingProducts: boolean;
@@ -21,7 +22,12 @@ interface IState {
   removedProductToast: ToastId;
 }
 
-class App extends React.Component<{}, IState> {
+interface IProps {
+  products: Product[];
+  onLoadProducts: (products: Product[]) => void;
+}
+
+class App extends React.Component<IProps, IState> {
   private readonly MOBILE_BREAKPOINT = 768;
 
   constructor(props: any) {
@@ -30,7 +36,6 @@ class App extends React.Component<{}, IState> {
     this.state = {
       initCompleted: false,
       products: [],
-      selectedProducts: [],
       displaying: 0,
       isMobile: window.innerWidth < this.MOBILE_BREAKPOINT,
       loadingProducts: false,
@@ -69,20 +74,8 @@ class App extends React.Component<{}, IState> {
 
   render() {
     const components = [
-      <ProductList
-        key="product-list"
-        products={this.state.products}
-        showCart={() => this.updateDisplayedComponent(1)}
-        addProductToCart={this.addProductToCart}
-      />,
-      <Cart
-        key="cart"
-        selectedProducts={this.state.selectedProducts}
-        showProductList={() => this.updateDisplayedComponent(0)}
-        increaseProductQuantity={this.addProductToCart}
-        decreaseProductQuantity={this.decreaseProductQuantity}
-        emptyCart={this.emptyCart}
-      />,
+      <ProductList key="product-list" showCart={() => this.updateDisplayedComponent(1)} />,
+      <Cart key="cart" showProductList={() => this.updateDisplayedComponent(0)} />,
     ];
 
     return (
@@ -112,13 +105,16 @@ class App extends React.Component<{}, IState> {
       const products = await ProductService.getProductList(this.state.nextPage);
 
       setTimeout(
-        () =>
+        () => {
+          this.props.onLoadProducts(products);
+
           this.setState({
             products: [...this.state.products, ...products],
             nextPage: this.state.nextPage + 1,
             loadingProducts: false,
             initCompleted: true,
-          }),
+          });
+        },
         this.state.initCompleted ? 0 : 2000
       );
     }
@@ -128,95 +124,47 @@ class App extends React.Component<{}, IState> {
     this.setState({ displaying: componentToDisplay });
   };
 
-  addProductToCart = (product: Product) => {
-    const { selectedProducts } = this.state;
+  // TODO: Not being called
+  // addProductToCart = () => {
+  //   const toastId = this.emitSuccessToast(
+  //     'Product added successfully.',
+  //     this.state.addedProductToast
+  //   );
 
-    const index = selectedProducts.findIndex(
-      (selectedProduct) => selectedProduct.product.id === product.id
-    );
+  //   this.setState({
+  //     addedProductToast: toastId,
+  //   });
+  // };
 
-    if (index !== -1) {
-      selectedProducts[index].quantity += 1;
-    } else {
-      selectedProducts.push({ product, quantity: 1 });
-    }
+  // TODO: Not being called
+  // decreaseProductQuantity = () => {
+  //   const toastId = this.emitSuccessToast(
+  //     'Product removed successfully.',
+  //     this.state.removedProductToast
+  //   );
 
-    selectedProducts.sort((a, b) => (a.product.productName > b.product.productName ? 1 : -1));
-
-    const toastId = this.emitSuccessToast(
-      'Product added successfully.',
-      this.state.addedProductToast
-    );
-
-    this.setState({
-      selectedProducts,
-      addedProductToast: toastId,
-    });
-
-    this.removeStockUnit(product);
-  };
-
-  removeStockUnit = (product: Product) => {
-    const { products } = this.state;
-    const index = products.findIndex((p) => p.id === product.id);
-
-    if (index !== -1) {
-      products[index].stock -= 1;
-      this.setState({
-        products,
-      });
-    }
-  };
-
-  decreaseProductQuantity = ({ product }: SelectedProduct) => {
-    const { selectedProducts } = this.state;
-
-    const index = selectedProducts.findIndex(
-      (selectedProduct) => selectedProduct.product.id === product.id
-    );
-
-    if (index !== -1) {
-      selectedProducts[index].quantity -= 1;
-    }
-
-    if (selectedProducts[index].quantity === 0) {
-      selectedProducts.splice(index, 1);
-    }
-
-    const toastId = this.emitSuccessToast(
-      'Product removed successfully.',
-      this.state.removedProductToast
-    );
-
-    this.setState({
-      selectedProducts,
-      removedProductToast: toastId,
-    });
-
-    this.addStockUnit(product);
-  };
-
-  addStockUnit = (product: Product) => {
-    const { products } = this.state;
-    const index = products.findIndex((p) => p.id === product.id);
-
-    if (index !== -1) {
-      products[index].stock += 1;
-      this.setState({
-        products,
-      });
-    }
-  };
-
-  emptyCart = () => {
-    this.setState({
-      selectedProducts: [],
-    });
-  };
+  //   this.setState({
+  //     removedProductToast: toastId,
+  //   });
+  // };
 
   emitSuccessToast = (message: string, previousToast: ToastId) => {
     return !toast.isActive(previousToast) ? toast.success(message) : previousToast;
   };
 }
 
-export default App;
+const mapStateToProps = (state: GlobalState) => {
+  return {
+    products: state.products,
+  };
+};
+
+const mapDispatchToProps = (dispatch: any) => {
+  return {
+    onLoadProducts: (products: Product[]) => {
+      dispatch(loadProducts(products));
+    },
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

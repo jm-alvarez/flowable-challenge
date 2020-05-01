@@ -1,26 +1,17 @@
 import React from 'react';
-import Product from '../../model/Product';
-import SelectedProduct from '../../model/SelectedProduct';
+import { useSelector } from 'react-redux';
+import { GlobalState } from '../../state/reducers';
 import CartListItem from '../CartListItem/CartListItem';
 import './CartList.scss';
 
-interface IProps {
-  selectedProducts: SelectedProduct[];
-  increaseProductQuantity: (product: Product) => void;
-  decreaseProductQuantity: (product: SelectedProduct) => void;
-}
+const CartList = () => {
+  const { cart, products } = useSelector((state: GlobalState) => state);
+  const getProduct = (id: string) => products.filter((product) => product.id === id)[0];
 
-const CartList = (props: IProps) => {
   return (
     <div className="cart-list">
-      {props.selectedProducts.map((selectedProduct) => (
-        <CartListItem
-          key={selectedProduct.product.id}
-          selectedProduct={selectedProduct}
-          quantity={selectedProduct.quantity}
-          increaseProductQuantity={props.increaseProductQuantity}
-          decreaseProductQuantity={props.decreaseProductQuantity}
-        />
+      {Object.entries(cart).map(([id, quantity]) => (
+        <CartListItem key={id} product={getProduct(id)} quantity={quantity} />
       ))}
     </div>
   );

@@ -1,18 +1,19 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
+import CartProducts from '../../model/Cart';
 import Product from '../../model/Product';
-import SelectedProduct from '../../model/SelectedProduct';
-import ProductService from '../../services/ProductService';
+import { GlobalState } from '../../state/reducers';
 import CartList from '../CartList/CartList';
 import Checkout from '../Checkout/Checkout';
 import './Cart.scss';
+import { emptyCart } from '../../state/actions';
 
 interface IProps {
-  selectedProducts: SelectedProduct[];
+  cart: CartProducts;
+  products: Product[];
   showProductList: () => void;
-  increaseProductQuantity: (product: Product) => void;
-  decreaseProductQuantity: (product: SelectedProduct) => void;
-  emptyCart: () => void;
+  onEmptyCart: () => void;
 }
 
 interface IState {
@@ -20,7 +21,7 @@ interface IState {
   checkingOut: boolean;
 }
 
-class Cart extends React.PureComponent<IProps, IState> {
+class Cart extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
 
@@ -50,13 +51,9 @@ class Cart extends React.PureComponent<IProps, IState> {
           </i>
           <h2>Cart</h2>
         </div>
-        {this.props.selectedProducts.length > 0 ? (
+        {Object.keys(this.props.cart).length > 0 ? (
           <React.Fragment>
-            <CartList
-              selectedProducts={this.props.selectedProducts}
-              increaseProductQuantity={this.props.increaseProductQuantity}
-              decreaseProductQuantity={this.props.decreaseProductQuantity}
-            />
+            <CartList />
             <Checkout
               totalPrice={this.state.totalPrice}
               doCheckout={this.doCheckout}
@@ -71,10 +68,12 @@ class Cart extends React.PureComponent<IProps, IState> {
   }
 
   updateTotalPrice = () => {
+    const products = Object.entries(this.props.cart);
+
     const totalPrice =
-      this.props.selectedProducts.length > 0
-        ? this.props.selectedProducts
-            .map((selectedProduct) => selectedProduct.product.price * selectedProduct.quantity)
+      products.length > 0
+        ? products
+            .map(([id, quantity]) => this.getProduct(id).price * quantity)
             .reduce((totalPrice, currentValue) => totalPrice + currentValue)
         : 0;
 
@@ -85,18 +84,20 @@ class Cart extends React.PureComponent<IProps, IState> {
     }
   };
 
+  getProduct = (id: string) => this.props.products.filter((product) => product.id === id)[0];
+
   doCheckout = () => {
     this.setState({
       checkingOut: true,
     });
 
-    this.props.selectedProducts.forEach((selectedProduct) => {
-      ProductService.updateProductStock(selectedProduct.product.id, selectedProduct.product.stock);
-    });
+    // this.props.cart.forEach((selectedProduct) => {
+    //   ProductService.updateProductStock(selectedProduct.product.id, selectedProduct.product.stock);
+    // });
 
     setTimeout(() => {
       toast.success('Checkout was successfully completed!');
-      this.props.emptyCart();
+      this.props.onEmptyCart();
       this.setState({
         checkingOut: false,
       });
@@ -105,4 +106,17 @@ class Cart extends React.PureComponent<IProps, IState> {
   };
 }
 
-export default Cart;
+const mapStateToProps = (state: GlobalState) => {
+  return {
+    cart: state.cart,
+    products: state.products,
+  };
+};
+
+const mapDispatchToProps = (dispatch: any) => {
+  return {
+    onEmptyCart: () => dispatch(emptyCart()),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Cart);

@@ -2,11 +2,12 @@ import React from 'react';
 import Product from '../../model/Product';
 import ProductListItem from '../ProductListItem/ProductListItem';
 import './ProductList.scss';
+import { connect } from 'react-redux';
+import { GlobalState } from '../../state/reducers';
 
 interface IProps {
   products: Product[];
   showCart: () => void;
-  addProductToCart: (product: Product) => void;
 }
 
 const ProductList = (props: IProps) => {
@@ -20,15 +21,17 @@ const ProductList = (props: IProps) => {
       </div>
       <div className="product-list">
         {props.products.map((product) => (
-          <ProductListItem
-            key={product.id}
-            product={product}
-            addProductToCart={props.addProductToCart}
-          />
+          <ProductListItem key={product.id} product={product} />
         ))}
       </div>
     </div>
   );
 };
 
-export default React.memo(ProductList);
+const mapStateToProps = (state: GlobalState) => {
+  return {
+    products: state.products,
+  };
+};
+
+export default connect(mapStateToProps)(ProductList);
