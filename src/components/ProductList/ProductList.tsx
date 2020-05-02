@@ -1,9 +1,13 @@
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
+import ShoppingCart from '@material-ui/icons/ShoppingCart';
 import React from 'react';
+import { connect } from 'react-redux';
 import Product from '../../model/Product';
+import { GlobalState } from '../../state/reducers';
 import ProductListItem from '../ProductListItem/ProductListItem';
 import './ProductList.scss';
-import { connect } from 'react-redux';
-import { GlobalState } from '../../state/reducers';
 
 interface IProps {
   products: Product[];
@@ -14,10 +18,12 @@ const ProductList = (props: IProps) => {
   return (
     <div className="product-list-container">
       <div className="title">
-        <i className="material-icons" title="Go to the shopping cart" onClick={props.showCart}>
-          arrow_back_ios
-        </i>
-        <h2>Product List</h2>
+        <Typography variant="h4">Product List</Typography>
+        <Tooltip title="Go to the shopping cart" arrow>
+          <IconButton className="icon-button" color="primary" onClick={props.showCart}>
+            <ShoppingCart />
+          </IconButton>
+        </Tooltip>
       </div>
       <div className="product-list">
         {props.products.map((product) => (

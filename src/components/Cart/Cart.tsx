@@ -1,3 +1,7 @@
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
+import Store from '@material-ui/icons/Store';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateProductStock } from '../../services/ProductService';
@@ -37,14 +41,12 @@ const Cart = (props: IProps) => {
   return (
     <div className="cart-container">
       <div className="title">
-        <i
-          className="material-icons"
-          title="Go to the product list"
-          onClick={props.showProductList}
-        >
-          arrow_back_ios
-        </i>
-        <h2>Cart</h2>
+        <Typography variant="h4">Cart</Typography>
+        <Tooltip title="Go to the product list" arrow>
+          <IconButton className="icon-button" color="primary" onClick={props.showProductList}>
+            <Store />
+          </IconButton>
+        </Tooltip>
       </div>
       {Object.keys(cart).length > 0 ? (
         <React.Fragment>
@@ -52,7 +54,9 @@ const Cart = (props: IProps) => {
           <Checkout doCheckout={doCheckout} checkingOut={checkingOut} />
         </React.Fragment>
       ) : (
-        <div className="cart-empty-message">Cart is empty</div>
+        <Typography className="cart-empty-message" variant="body1">
+          Cart is empty.
+        </Typography>
       )}
     </div>
   );

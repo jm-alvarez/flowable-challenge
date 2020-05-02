@@ -3,25 +3,11 @@
   max-width: 66%;
   overflow-x: hidden;
 
-  .title {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  h2 {
-    text-align: center;
-  }
-
   .product-list {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: space-around;
-  }
-
-  .title > i {
-    display: none;
   }
 
   @media only screen and (min-width: 1250px) {
@@ -30,10 +16,5 @@
 
   @media only screen and (max-width: 768px) {
     max-width: 100%;
-
-    .title > i {
-      display: block;
-      margin-right: 25px;
-    }
   }
 }

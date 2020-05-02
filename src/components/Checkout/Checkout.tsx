@@ -1,8 +1,11 @@
+import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
+import Payment from '@material-ui/icons/Payment';
 import React from 'react';
 import Loader from 'react-loader-spinner';
-import './Checkout.scss';
 import { useSelector } from 'react-redux';
 import { GlobalState } from '../../state/reducers';
+import './Checkout.scss';
 
 interface IProps {
   doCheckout: () => void;
@@ -18,11 +21,15 @@ const Checkout = (props: IProps) => {
         <Loader type="ThreeDots" color="Blue" />
       ) : (
         <React.Fragment>
-          <div className="button" title="Go to payment" onClick={props.doCheckout}>
-            <i className="material-icons">payment</i>
-            <span>Checkout</span>
-          </div>
-          <span>{totalPrice}$</span>
+          <Button
+            color="primary"
+            variant="outlined"
+            startIcon={<Payment />}
+            onClick={props.doCheckout}
+          >
+            Checkout
+          </Button>
+          <Typography variant="h6" className="total-price">{totalPrice}$</Typography>
         </React.Fragment>
       )}
     </div>

@@ -5,22 +5,8 @@
   align-items: center;
   margin: 10px;
 
-  span {
-    font-weight: bold;
+  .total-price {
     margin-left: 10px;
-  }
-
-  .button {
-    display: flex;
-    align-items: center;
-    border: 2px solid #000000;
-    border-radius: 6px;
-    padding: 5px;
-    cursor: pointer;
-
-    &:hover {
-      background-color: grey;
-    }
   }
 
   @media only screen and (max-width: 768px) {

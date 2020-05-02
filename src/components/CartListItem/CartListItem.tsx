@@ -1,3 +1,8 @@
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
+import AddCircleOutline from '@material-ui/icons/AddCircleOutline';
+import RemoveCircleOutline from '@material-ui/icons/RemoveCircleOutline';
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import Product from '../../model/Product';
@@ -12,38 +17,48 @@ interface IProps {
 
 const CartListItem = (props: IProps) => {
   const { product, quantity } = props;
-  const dispatch = useDispatch();
-
-  const quantityComponents = [
-    <i
-      key="remove"
-      className="material-icons"
-      onClick={() => dispatch(removeProductFromCart(product, quantity))}
-    >
-      remove_circle_outline
-    </i>,
-    <span key="text">{props.quantity}</span>,
-    <i
-      key="add"
-      className="material-icons"
-      onClick={() => dispatch(addProductToCart(product, quantity))}
-    >
-      add_circle_outline
-    </i>,
-  ];
-
   const totalPrice = quantity * product.price;
+  const dispatch = useDispatch();
 
   return (
     <div className="cart-list-item">
       <ProductImage imageUrl={product.image_url} productName={product.productName} />
+
       <div className="content">
-        <p>{product.productName}</p>
+        <Typography className="product-name" variant="body1">
+          {product.productName}
+        </Typography>
+
         <div className="quantity">
-          {product.stock ? quantityComponents : quantityComponents.slice(0, 2)}
+          <Tooltip key="remove" title="Remove 1 unit" arrow>
+            <IconButton
+              className="icon-button"
+              color="primary"
+              onClick={() => dispatch(removeProductFromCart(product, quantity))}
+            >
+              <RemoveCircleOutline />
+            </IconButton>
+          </Tooltip>
+
+          <Typography variant="body1">{props.quantity}</Typography>
+
+          {product.stock ? (
+            <Tooltip title="Add 1 unit" arrow>
+              <IconButton
+                className="icon-button"
+                color="primary"
+                onClick={() => dispatch(addProductToCart(product, quantity))}
+              >
+                <AddCircleOutline />
+              </IconButton>
+            </Tooltip>
+          ) : null}
         </div>
       </div>
-      <p className="item-total-price">{totalPrice}$</p>
+
+      <Typography className="item-total-price" variant="body1">
+        {totalPrice}$
+      </Typography>
     </div>
   );
 };
