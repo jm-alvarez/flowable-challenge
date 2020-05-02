@@ -36,4 +36,4 @@ const ProductListItem = (props: IProps) => {
   );
 };
 
-export default ProductListItem;
+export default React.memo(ProductListItem);

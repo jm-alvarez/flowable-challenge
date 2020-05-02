@@ -3,18 +3,18 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import ShoppingCart from '@material-ui/icons/ShoppingCart';
 import React from 'react';
-import { connect } from 'react-redux';
-import Product from '../../model/Product';
+import { useSelector } from 'react-redux';
 import { GlobalState } from '../../state/reducers';
 import ProductListItem from '../ProductListItem/ProductListItem';
 import './ProductList.scss';
 
 interface IProps {
-  products: Product[];
   showCart: () => void;
 }
 
 const ProductList = (props: IProps) => {
+  const { products } = useSelector((state: GlobalState) => state);
+
   return (
     <div className="product-list-container">
       <div className="title">
@@ -26,7 +26,7 @@ const ProductList = (props: IProps) => {
         </Tooltip>
       </div>
       <div className="product-list">
-        {props.products.map((product) => (
+        {products.map((product) => (
           <ProductListItem key={product.id} product={product} />
         ))}
       </div>
@@ -34,10 +34,4 @@ const ProductList = (props: IProps) => {
   );
 };
 
-const mapStateToProps = (state: GlobalState) => {
-  return {
-    products: state.products,
-  };
-};
-
-export default connect(mapStateToProps)(ProductList);
+export default React.memo(ProductList);

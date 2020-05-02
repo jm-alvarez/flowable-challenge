@@ -19,4 +19,4 @@ const CartList = () => {
   );
 };
 
-export default CartList;
+export default React.memo(CartList);

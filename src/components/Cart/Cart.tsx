@@ -62,4 +62,4 @@ const Cart = (props: IProps) => {
   );
 };
 
-export default Cart;
+export default React.memo(Cart);
