@@ -1,5 +1,5 @@
 import { emitAddedProductToast, emitRemovedProductToast } from './../utils/toasts';
-import CartProducts from '../model/Cart';
+import CartProducts from '../model/CartProducts';
 import { ADD_PRODUCT_TO_CART, REMOVE_PRODUCT_FROM_CART, EMPTY_CART } from './actions';
 import { IAction } from './reducers';
 

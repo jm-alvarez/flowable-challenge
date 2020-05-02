@@ -7,7 +7,7 @@ import './ProductListItem.scss';
 import { GlobalState } from '../../state/reducers';
 import { useSelector, useDispatch } from 'react-redux';
 import { addProductToCart } from '../../state/actions';
-import CartProducts from '../../model/Cart';
+import CartProducts from '../../model/CartProducts';
 
 interface IProps {
   product: Product;

@@ -1,4 +1,4 @@
-import CartProducts from '../model/Cart';
+import CartProducts from '../model/CartProducts';
 import Product from '../model/Product';
 import { combineReducers } from 'redux';
 import products from './product-reducer';
