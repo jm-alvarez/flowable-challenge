@@ -1,41 +1,45 @@
+import { fireEvent, render } from '@testing-library/react';
 import React from 'react';
-import { render, unmountComponentAtNode } from 'react-dom';
-import { act } from 'react-dom/test-utils';
+import { Provider } from 'react-redux';
+import { createStore, Store } from 'redux';
+import reducers from '../../state/reducers';
 import Checkout from './Checkout';
 
-describe('Checkout', () => {
-  let container: Element;
-  beforeEach(() => {
-    container = document.createElement('div');
-    document.body.append(container);
+let container: HTMLElement;
+let store: Store;
+let doCheckout: jest.Mock;
+
+beforeEach(() => {
+  store = createStore(reducers, {
+    totalPrice: 100,
   });
+  doCheckout = jest.fn();
 
-  afterEach(() => {
-    unmountComponentAtNode(container);
-    container.remove();
-  });
+  container = render(
+    <Provider store={store}>
+      <Checkout checkingOut={false} doCheckout={doCheckout} />
+    </Provider>
+  ).container;
+});
 
-  it('does not render checkout button when checking out', () => {
-    act(() => {
-      render(
-        <Checkout checkingOut={true} totalPrice={0} doCheckout={() => true} />,
-        container
-      );
-    });
+test('renders price and button when not checking out', () => {
+  expect(container.getElementsByClassName('total-price')[0].textContent).toEqual('100$');
+  expect(container.getElementsByTagName('button')).toHaveLength(1);
+});
 
-    expect(container.textContent).toEqual(
-      expect.not.stringContaining('Checkout')
-    );
-  });
+test('does checkout on click', () => {
+  fireEvent.click(container.getElementsByTagName('button')[0]);
+  expect(doCheckout).toHaveBeenCalled();
+});
 
-  it('renders checkout button when NOT checking out', () => {
-    act(() => {
-      render(
-        <Checkout checkingOut={false} totalPrice={0} doCheckout={() => true} />,
-        container
-      );
-    });
+test('does not render price and button when checking out', () => {
+  container = render(
+    <Provider store={store}>
+      <Checkout checkingOut={true} doCheckout={doCheckout} />
+    </Provider>
+  ).container;
 
-    expect(container.textContent).toEqual(expect.stringContaining('Checkout'));
-  });
+  expect(container.getElementsByClassName('total-price')).toHaveLength(0);
+  expect(container.getElementsByTagName('button')).toHaveLength(0);
+  expect(container.getElementsByTagName('svg')).toHaveLength(1);
 });

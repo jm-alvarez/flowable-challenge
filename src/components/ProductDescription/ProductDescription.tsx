@@ -25,7 +25,7 @@ const ProductDescription = (props: IProps) => {
         <Typography variant="body2">{productDescription.substring(0, 75)}...</Typography>
       </DescriptionTooltip>
     ) : (
-      <Typography variant="body2">{productDescription.substring(0, 75)}...</Typography>
+      <Typography variant="body2">{productDescription.substring(0, 75)}</Typography>
     );
 
   return (
