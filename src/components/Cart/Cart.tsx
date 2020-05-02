@@ -1,4 +1,4 @@
-import IconButton from '@material-ui/core/IconButton';
+import Fab from '@material-ui/core/Fab';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import Store from '@material-ui/icons/Store';
@@ -43,9 +43,9 @@ const Cart = (props: IProps) => {
       <div className="title">
         <Typography variant="h4">Cart</Typography>
         <Tooltip title="Go to the product list" arrow>
-          <IconButton className="icon-button" color="primary" onClick={props.showProductList}>
+          <Fab className="icon-button" color="primary" onClick={props.showProductList}>
             <Store />
-          </IconButton>
+          </Fab>
         </Tooltip>
       </div>
       {Object.keys(cart).length > 0 ? (

@@ -1,3 +1,4 @@
+import Drawer from '@material-ui/core/Drawer';
 import React, { useEffect, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import Loader from 'react-loader-spinner';
@@ -13,9 +14,9 @@ import './App.scss';
 
 const App = () => {
   const MOBILE_BREAKPOINT = 768;
-  const [displaying, setDisplaying] = useState(0);
   const [isMobile, setIsMobile] = useState(window.innerWidth < MOBILE_BREAKPOINT);
   const [nextPage, setNextPage] = useState(2);
+  const [displayCart, setDisplayCart] = useState(false);
 
   const dispatch = useDispatch();
   const products = useSelector((state: GlobalState) => state.products);
@@ -39,10 +40,7 @@ const App = () => {
     });
   };
 
-  const components = [
-    <ProductList key="product-list" showCart={() => setDisplaying(1)} />,
-    <Cart key="cart" showProductList={() => setDisplaying(0)} />,
-  ];
+  const CartComponent = <Cart showProductList={() => setDisplayCart(false)} />;
 
   return (
     <InfiniteScroll
@@ -53,13 +51,22 @@ const App = () => {
       endMessage={<p>No more products found.</p>}
     >
       {products.length > 0 ? (
-        <div className="container">{isMobile ? components[displaying] : components}</div>
+        <div className="container">
+          <ProductList key="product-list" showCart={() => setDisplayCart(true)} />
+          {isMobile ? (
+            <Drawer anchor="right" open={displayCart}>
+              {CartComponent}
+            </Drawer>
+          ) : (
+            CartComponent
+          )}
+        </div>
       ) : (
         <div className="loader">
           <Loader type="Rings" color="Blue" />
         </div>
       )}
-      <ToastContainer position="bottom-right" />
+      <ToastContainer position="top-left" />
     </InfiniteScroll>
   );
 };
