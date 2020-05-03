@@ -1,74 +1,75 @@
+import '@testing-library/jest-dom/extend-expect';
+import { fireEvent, render, waitFor } from '@testing-library/react';
 import React from 'react';
-import { render, unmountComponentAtNode } from 'react-dom';
-import { act } from 'react-dom/test-utils';
+import { Provider } from 'react-redux';
+import { createStore, Store } from 'redux';
+import Product from '../../model/Product';
+import reducers from '../../state/reducers';
 import Cart from './Cart';
-import SelectedProduct from '../../model/SelectedProduct';
 
-describe('Cart', () => {
-  let container: Element;
-  const testProducts: SelectedProduct[] = [
-    {
-      product: {
-        id: '41fd4fd9-95c7-4809-96db-a147d352fdbb',
-        image_url: 'https://dummyimage.com/400x400/28200e/000&text=Unbranded Metal Chair',
-        stock: 20,
-        productName: 'Unbranded Metal Chair',
-        price: 43,
-        productDescription:
-          'Porro tempore autem. Sunt molestias qui quod recusandae nemo quia optio.',
-        favorite: 1
-      },
-      quantity: 5
+let container: HTMLElement;
+let store: Store;
+let showProductList: jest.Mock;
+
+beforeEach(() => {
+  store = createStore(reducers, {
+    products: [generateProduct('p1'), generateProduct('p2'), generateProduct('p3')],
+    cart: {
+      p1: 2,
+      p2: 5,
     },
-    {
-      product: {
-        id: '20cc33f1-223b-4cf0-878d-fdedb3f60b56',
-        image_url: 'https://dummyimage.com/400x400/2ee9f7/000&text=Handcrafted Metal Towels',
-        stock: 25,
-        productName: 'Handcrafted Metal Towels',
-        price: 98,
-        productDescription:
-          'Rerum minima laudantium blanditiis dolorem dolores ut sint ut quidem.',
-        favorite: 0
-      },
-      quantity: 10
-    }
-  ];
-
-  beforeEach(() => {
-    container = document.createElement('div');
-    document.body.append(container);
   });
 
-  afterEach(() => {
-    unmountComponentAtNode(container);
-    container.remove();
-  });
+  showProductList = jest.fn();
 
-  it('renders cart empty text when there are no selected products', () => {
-    act(() => {
-      render(<Cart {...getProps([])} />, container);
-    });
-
-    expect(container.textContent).toEqual(expect.stringContaining('Cart is empty'));
-  });
-
-  it('renders the selected products', () => {
-    act(() => {
-      render(<Cart {...getProps(testProducts)} />, container);
-    });
-
-    expect(container.textContent).toEqual(expect.not.stringContaining('Cart is empty'));
-    expect(container.getElementsByClassName('cart-list-item').length).toEqual(2);
-  });
+  container = render(
+    <Provider store={store}>
+      <Cart showProductList={showProductList} />
+    </Provider>
+  ).container;
 });
 
-function getProps(products: SelectedProduct[]) {
+test('renders', () => {
+  expect(container.getElementsByClassName('cart-container')).toHaveLength(1);
+  expect(container.getElementsByClassName('cart-list')).toHaveLength(1);
+  expect(container.getElementsByClassName('checkout')).toHaveLength(1);
+  expect(container.getElementsByTagName('h4')[0].textContent).toEqual('Cart');
+});
+
+test('shows the empty cart message when there are no products selected', () => {
+  store = createStore(reducers, {
+    products: [generateProduct('p1'), generateProduct('p2'), generateProduct('p3')],
+    cart: {},
+  });
+
+  container = render(
+    <Provider store={store}>
+      <Cart showProductList={showProductList} />
+    </Provider>
+  ).container;
+
+  expect(container.getElementsByClassName('cart-container')).toHaveLength(1);
+  expect(container.getElementsByClassName('cart-list')).toHaveLength(0);
+  expect(container.getElementsByClassName('checkout')).toHaveLength(0);
+  expect(container.getElementsByClassName('cart-empty-message')).toHaveLength(1);
+});
+
+test('empties cart on checkout', async () => {
+  expect(Object.keys(store.getState().cart)).toHaveLength(2);
+
+  fireEvent.click(container.querySelector('.checkout button') as Element);
+  await waitFor(() => expect(showProductList).toHaveBeenCalledTimes(1));
+  expect(Object.keys(store.getState().cart)).toHaveLength(0);
+});
+
+const generateProduct = (id: string): Product => {
   return {
-    selectedProducts: products,
-    showProductList: () => true,
-    increaseProductQuantity: () => true,
-    decreaseProductQuantity: () => true,
-    emptyCart: () => true
+    id,
+    favorite: 0,
+    image_url: 'testImage',
+    price: 100,
+    productDescription: 'testDescription',
+    productName: 'testName',
+    stock: 30,
   };
-}
+};
