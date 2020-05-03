@@ -19,7 +19,7 @@ export interface GlobalState {
 const reducers = combineReducers({
   products,
   cart,
-  totalPrice,
+  totalPrice
 });
 
 export default reducers;

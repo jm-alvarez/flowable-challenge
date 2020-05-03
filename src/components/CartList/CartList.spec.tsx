@@ -14,8 +14,8 @@ beforeEach(() => {
     products: [generateProduct('p1'), generateProduct('p2'), generateProduct('p3')],
     cart: {
       p1: 2,
-      p2: 5,
-    },
+      p2: 5
+    }
   });
 
   container = render(
@@ -37,6 +37,6 @@ const generateProduct = (id: string): Product => {
     price: 100,
     productDescription: 'testDescription',
     productName: 'testName',
-    stock: 30,
+    stock: 30
   };
 };

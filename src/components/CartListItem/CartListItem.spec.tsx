@@ -12,7 +12,7 @@ let store: Store;
 beforeEach(() => {
   const product = generateProduct('p1');
   store = createStore(reducers, {
-    products: [product],
+    products: [product]
   });
 
   container = render(
@@ -59,6 +59,6 @@ const generateProduct = (id: string): Product => {
     price: 100,
     productDescription: 'testDescription',
     productName: 'testName',
-    stock: 30,
+    stock: 30
   };
 };

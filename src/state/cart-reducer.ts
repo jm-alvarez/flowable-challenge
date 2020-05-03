@@ -10,7 +10,7 @@ const cart = (state: CartProducts = {}, action: IAction) => {
 
       return {
         ...state,
-        [action.payload.id]: action.payload.quantity,
+        [action.payload.id]: action.payload.quantity
       };
 
     case REMOVE_PRODUCT_FROM_CART:
@@ -20,7 +20,7 @@ const cart = (state: CartProducts = {}, action: IAction) => {
       return action.payload.quantity !== 0
         ? {
             ...products,
-            [action.payload.id]: action.payload.quantity,
+            [action.payload.id]: action.payload.quantity
           }
         : { ...products };
 

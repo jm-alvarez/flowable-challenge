@@ -15,7 +15,7 @@ const products = (state: Product[] = [], action: IAction) => {
 
         return {
           ...product,
-          stock: product.stock - 1,
+          stock: product.stock - 1
         };
       });
 
@@ -27,7 +27,7 @@ const products = (state: Product[] = [], action: IAction) => {
 
         return {
           ...product,
-          stock: product.stock + 1,
+          stock: product.stock + 1
         };
       });
 

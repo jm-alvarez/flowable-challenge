@@ -29,7 +29,9 @@ const Checkout = (props: IProps) => {
           >
             Checkout
           </Button>
-          <Typography variant="h6" className="total-price">{totalPrice}$</Typography>
+          <Typography variant="h6" className="total-price">
+            {totalPrice}$
+          </Typography>
         </React.Fragment>
       )}
     </div>

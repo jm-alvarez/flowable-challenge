@@ -12,7 +12,7 @@ let showCart: jest.Mock;
 
 beforeEach(() => {
   store = createStore(reducers, {
-    products: [generateProduct('p1'), generateProduct('p2'), generateProduct('p3')],
+    products: [generateProduct('p1'), generateProduct('p2'), generateProduct('p3')]
   });
   showCart = jest.fn();
 
@@ -40,6 +40,6 @@ const generateProduct = (id: string): Product => {
     price: 100,
     productDescription: 'testDescription',
     productName: 'testName',
-    stock: 30,
+    stock: 30
   };
 };

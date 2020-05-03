@@ -16,8 +16,8 @@ beforeEach(() => {
     products: [generateProduct('p1'), generateProduct('p2'), generateProduct('p3')],
     cart: {
       p1: 2,
-      p2: 5,
-    },
+      p2: 5
+    }
   });
 
   showProductList = jest.fn();
@@ -39,7 +39,7 @@ test('renders', () => {
 test('shows the empty cart message when there are no products selected', () => {
   store = createStore(reducers, {
     products: [generateProduct('p1'), generateProduct('p2'), generateProduct('p3')],
-    cart: {},
+    cart: {}
   });
 
   container = render(
@@ -70,6 +70,6 @@ const generateProduct = (id: string): Product => {
     price: 100,
     productDescription: 'testDescription',
     productName: 'testName',
-    stock: 30,
+    stock: 30
   };
 };

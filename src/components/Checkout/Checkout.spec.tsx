@@ -11,7 +11,7 @@ let doCheckout: jest.Mock;
 
 beforeEach(() => {
   store = createStore(reducers, {
-    totalPrice: 100,
+    totalPrice: 100
   });
   doCheckout = jest.fn();
 

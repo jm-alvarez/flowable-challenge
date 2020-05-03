@@ -9,7 +9,7 @@ import App from './App';
 
 test('renders the products and the cart', () => {
   const store = createStore(reducers, {
-    products: [generateProduct('p1'), generateProduct('p2'), generateProduct('p3')],
+    products: [generateProduct('p1'), generateProduct('p2'), generateProduct('p3')]
   });
 
   const container = render(
@@ -25,7 +25,7 @@ test('renders the products and the cart', () => {
 
 test('renders the loader when there are no products', () => {
   const store = createStore(reducers, {
-    products: [],
+    products: []
   });
 
   const container = render(
@@ -48,6 +48,6 @@ const generateProduct = (id: string): Product => {
     price: 100,
     productDescription: 'testDescription',
     productName: 'testName',
-    stock: 30,
+    stock: 30
   };
 };

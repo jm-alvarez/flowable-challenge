@@ -15,8 +15,8 @@ const ProductDescription = (props: IProps) => {
 
   const DescriptionTooltip = withStyles({
     tooltip: {
-      'font-size': '16px',
-    },
+      'font-size': '16px'
+    }
   })(Tooltip);
 
   const descriptionElement =
